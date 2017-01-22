@@ -1,9 +1,6 @@
 const http = require('http')
+const { assert } = require('./utils')
 
 http.get('/', (res) => {
-  if (res.statusCode === 200) {
-    console.log('Success')
-  } else {
-    console.log('Error', res.statusCode)
-  }
+  assert.equal(res.statusCode, 200, 'Status should be equal to 200')
 })
