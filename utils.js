@@ -1,8 +1,8 @@
 module.exports.assert = {
-  equal: function (condition1, condition2, message) {
+  equal: function (value1, value2, message) {
     message = message || "Error aren't equal"
 
-    if (condition1 !== condition2) {
+    if (value1 !== value2) {
       throw new Error(message)
     }
   }
