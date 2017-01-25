@@ -1,4 +1,4 @@
-module.exports.assert = {
+module.exports = {
   equal: function (value1, value2, message) {
     message = message || "Error aren't equal"
 
