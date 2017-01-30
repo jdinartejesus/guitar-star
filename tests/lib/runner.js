@@ -4,13 +4,13 @@ module.exports = {
     this.isSetup = true
     this.tests = []
     this.errors = []
-    this.failures = 0
 
     process.nextTick(() => {
       this.run()
       this.end()
     })
   },
+
   test (message, fn) {
     if (!this.isSetup) {
       this.setup()
@@ -18,17 +18,19 @@ module.exports = {
 
     this.tests.push(fn)
   },
+
   run () {
     this.tests.forEach((test) => {
       try {
         test()
       } catch (err) {
-        this.failures++
         this.errors.push(err.message)
       }
     })
   },
+
   end () {
+    this.failures = this.errors.length
     this.success = this.tests.length - this.failures
 
     this.errors.forEach((error) => (process.stdout.write(`${error}\n`)))
