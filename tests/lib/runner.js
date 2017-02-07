@@ -3,13 +3,8 @@ module.exports = {
   _setup () {
     this.isSetup = true
     this.tests = []
-    this.errors = []
 
-    process.nextTick(() => {
-
-      this._runTest()
-
-    })
+    process.nextTick(() => this._runTests())
   },
 
   test (msg, fn) {
@@ -20,9 +15,9 @@ module.exports = {
     this.tests.push(fn)
   },
 
-  _testComplete () {
-    if (arguments) {
-      this.errors.push(arguments)
+  _testComplete (err) {
+    if (err) {
+      this._fail(err.message)
     }
 
     this._runNextTest()
@@ -34,30 +29,28 @@ module.exports = {
       return
     }
 
-    var test = this.tests.shift() 
-    if (!test.length) {
-      try { 
-        test()
-      } catch (err) {
-        this._fail(0, err.message)
-      }
-      this._runNextTest()
-    } else {
-      try { 
+    let test = this.tests.shift()
+
+    try {
+      if (test.length) {
         test(this._testComplete.bind(this))
-      } catch (err) {
-        this._fail(0, err.message)
+      } else {
+        test()
       }
+    } catch (err) {
+      this._fail(err.message)
+      this._runNextTest()
     }
   },
 
-  _runTest () {
+  _runTests () {
+    this.errors = []
     this.total = this.tests.length
     this._runNextTest()
   },
 
-  _fail (index, msg) {
-    this.errors.push({id: index, msg: msg})
+  _fail (msg) {
+    this.errors.push({msg})
   },
 
   _finishTests () {
