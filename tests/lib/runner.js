@@ -36,6 +36,7 @@ module.exports = {
         test(this._testComplete.bind(this))
       } else {
         test()
+        this._runNextTest()
       }
     } catch (err) {
       this._fail(err.message)
@@ -55,7 +56,7 @@ module.exports = {
 
   _finishTests () {
     this.failures = this.errors.length
-    this.success =  this.total - this.failures
+    this.success = this.total - this.failures
 
     this.errors.forEach((error) => (process.stdout.write(`${error.msg} \n`)))
     process.stdout.write(`${this.failures} Failed ${this.success} Passed \n`)
