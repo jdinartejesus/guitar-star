@@ -1,39 +1,70 @@
 module.exports = {
   isSetup: false,
-  setup () {
+  _setup () {
     this.isSetup = true
     this.tests = []
     this.errors = []
 
     process.nextTick(() => {
-      this.run()
-      this.end()
+
+      this._runTest()
+
     })
   },
 
-  test (message, fn) {
+  test (msg, fn) {
     if (!this.isSetup) {
-      this.setup()
+      this._setup()
     }
 
     this.tests.push(fn)
   },
 
-  run () {
-    this.tests.forEach((test) => {
-      try {
-        test()
-      } catch (err) {
-        this.errors.push(err.message)
-      }
-    })
+  _testComplete () {
+    if (arguments) {
+      this.errors.push(arguments)
+    }
+
+    this._runNextTest()
   },
 
-  end () {
-    this.failures = this.errors.length
-    this.success = this.tests.length - this.failures
+  _runNextTest () {
+    if (this.tests.length === 0) {
+      this._finishTests()
+      return
+    }
 
-    this.errors.forEach((error) => (process.stdout.write(`${error}\n`)))
-    process.stdout.write(`${this.failures} Failed ${this.success} Passed\n`)
+    var test = this.tests.shift() 
+    if (!test.length) {
+      try { 
+        test()
+      } catch (err) {
+        this._fail(0, err.message)
+      }
+      this._runNextTest()
+    } else {
+      try { 
+        test(this._testComplete.bind(this))
+      } catch (err) {
+        this._fail(0, err.message)
+      }
+    }
+  },
+
+  _runTest () {
+    this.total = this.tests.length
+    this._runNextTest()
+  },
+
+  _fail (index, msg) {
+    this.errors.push({id: index, msg: msg})
+  },
+
+  _finishTests () {
+    this.failures = this.errors.length
+    this.success =  this.total - this.failures
+
+    this.errors.forEach((error) => (process.stdout.write(`${error.msg} \n`)))
+    process.stdout.write(`${this.failures} Failed ${this.success} Passed \n`)
   }
 }
