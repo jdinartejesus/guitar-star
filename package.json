@@ -1,0 +1,22 @@
+{
+  "name": "guitar-star",
+  "version": "1.0.0",
+  "description": "Simple guitar mutiplayer game",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "node ./tests/test-api.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jdinartejesus/guitar-star.git"
+  },
+  "author": "Dinarte Jesus <jdinartejesus@gmail.com> (http://github.com/jdinartejesus)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jdinartejesus/guitar-star/issues"
+  },
+  "homepage": "https://github.com/jdinartejesus/guitar-star#readme"
+}
