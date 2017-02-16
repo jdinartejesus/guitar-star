@@ -12,12 +12,15 @@ module.exports = {
       this._setup()
     }
 
-    this.tests.push(fn)
+    this.tests.push({
+      msg: msg,
+      test: fn
+    })
   },
 
-  _testComplete (err) {
+  _testComplete (msg, err) {
     if (err) {
-      this._fail(err.message)
+      this._fail(err.message, msg)
     }
 
     this._runNextTest()
@@ -29,17 +32,17 @@ module.exports = {
       return
     }
 
-    let test = this.tests.shift()
+    let suite = this.tests.shift()
 
     try {
-      if (test.length) {
-        test(this._testComplete.bind(this))
+      if (suite.test.length) {
+        suite.test(this._testComplete.bind(this, suite.msg))
       } else {
-        test()
+        suite.test()
         this._runNextTest()
       }
     } catch (err) {
-      this._fail(err.message)
+      this._fail(err.message, suite.msg)
       this._runNextTest()
     }
   },
@@ -50,15 +53,18 @@ module.exports = {
     this._runNextTest()
   },
 
-  _fail (msg) {
-    this.errors.push({msg})
+  _fail (msg, suite) {
+    this.errors.push({msg, suite})
   },
 
   _finishTests () {
     this.failures = this.errors.length
     this.success = this.total - this.failures
 
-    this.errors.forEach((error) => (process.stdout.write(`${error.msg} \n`)))
-    process.stdout.write(`${this.failures} Failed ${this.success} Passed \n`)
+    this.errors.forEach((error) => {
+      process.stdout.write(`\n ${error.suite}`)
+      process.stdout.write(`\n Error: ${error.msg} \n`)
+    })
+    process.stdout.write(`\n ${this.failures} Failed ${this.success} Passed \n`)
   }
 }
