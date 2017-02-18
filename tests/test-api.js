@@ -11,15 +11,3 @@ runner.test('base api should return 200 status code', (done) => {
     done(err)
   })
 })
-
-runner.test('base api should return 200 status code', () => {
-  console.log('Done A')
-  assert.equal(200, 300, 'Should be true')
-})
-
-runner.test('base api should return 200 status code', (done) => {
-  setTimeout(() => {
-    console.log('Done B')
-    done()
-  }, 200)
-})
