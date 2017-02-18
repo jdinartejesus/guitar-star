@@ -1,10 +1,12 @@
+let util = require('util')
+
 module.exports = {
   isSetup: false,
   _setup () {
     this.isSetup = true
     this.tests = []
 
-    process.nextTick(() => this._runTests())
+    process.nextTick(this._runTests.bind(this))
   },
 
   test (msg, fn) {
@@ -12,10 +14,7 @@ module.exports = {
       this._setup()
     }
 
-    this.tests.push({
-      msg: msg,
-      test: fn
-    })
+    this.tests.push({msg, fn})
   },
 
   _testComplete (msg, err) {
@@ -32,17 +31,17 @@ module.exports = {
       return
     }
 
-    let suite = this.tests.shift()
+    let test = this.tests.shift()
 
     try {
-      if (suite.test.length) {
-        suite.test(this._testComplete.bind(this, suite.msg))
+      if (test.fn.length) {
+        test.fn(this._testComplete.bind(this, test.msg))
       } else {
-        suite.test()
+        test.fn()
         this._runNextTest()
       }
     } catch (err) {
-      this._fail(err.message, suite.msg)
+      this._fail(err.message, test.msg)
       this._runNextTest()
     }
   },
@@ -53,8 +52,8 @@ module.exports = {
     this._runNextTest()
   },
 
-  _fail (msg, suite) {
-    this.errors.push({msg, suite})
+  _fail (err, msg) {
+    this.errors.push({err, msg})
   },
 
   _finishTests () {
@@ -62,9 +61,10 @@ module.exports = {
     this.success = this.total - this.failures
 
     this.errors.forEach((error) => {
-      process.stdout.write(`\n ${error.suite}`)
-      process.stdout.write(`\n Error: ${error.msg} \n`)
+      process.stdout.write(`\n ${error.msg} [Fail]`)
+      process.stdout.write(`\n ${error.err} \n`)
     })
-    process.stdout.write(`\n ${this.failures} Failed ${this.success} Passed \n`)
+
+    process.stdout.write(`\n ${this.success} passed, ${this.failures} falied, total ${this.total} \n`)
   }
 }
