@@ -1,6 +1,7 @@
 let http = require('http')
-let assert = require('./lib/assert')
-let runner = require('./lib/runner')
+let Provoj = require('provoj')
+let assert = Provoj.assert
+let runner = Provoj.runner
 const BASE_URL = 'http://localhost:8080'
 
 runner.test('base api should return 200 status code', (done) => {
