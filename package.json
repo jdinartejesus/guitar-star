@@ -20,6 +20,6 @@
   },
   "homepage": "https://github.com/jdinartejesus/guitar-star#readme",
   "devDependencies": {
-    "provoj": "^0.1.2"
+    "provoj": "^0.1.3"
   }
 }
